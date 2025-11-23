@@ -6,6 +6,8 @@ const db = require('./models');
 const userRoutes = require('./routes/userRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 
+const adminController = require('./controllers/adminController');
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -18,9 +20,12 @@ app.use('/api/user', userRoutes);
 app.use('/api/admin', adminRoutes);
 
 db.sequelize
-  .sync()
-  .then(() => {
+  .sync() 
+  .then(async () => {
     console.log('Database terhubung & tersinkronisasi.');
+
+    await adminController.createDefaultAdmin();
+
     app.listen(PORT, () => {
       console.log(`Server berjalan di http://localhost:${PORT}`);
     });

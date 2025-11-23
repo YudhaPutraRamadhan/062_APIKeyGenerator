@@ -94,3 +94,29 @@ exports.updateApiKey = async (req, res) => {
     res.status(500).json({ message: 'Error server', error: error.message });
   }
 };
+
+exports.createDefaultAdmin = async () => {
+  try {
+    const email = process.env.ADMIN_EMAIL;
+    const password = process.env.ADMIN_PASSWORD;
+
+    if (!email || !password) {
+      console.log('⚠️ Harap set ADMIN_EMAIL dan ADMIN_PASSWORD di .env untuk membuat admin otomatis.');
+      return;
+    }
+
+    const existingAdmin = await Admin.findOne({ where: { email: email } });
+
+    if (!existingAdmin) {
+      await Admin.create({
+        email: email,
+        password: password
+      });
+      console.log(`✅ Default Admin berhasil dibuat: ${email}`);
+    } else {
+      console.log(`ℹ️ Admin ${email} sudah tersedia.`);
+    }
+  } catch (error) {
+    console.error('❌ Gagal membuat default admin:', error.message);
+  }
+};
